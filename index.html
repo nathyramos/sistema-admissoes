@@ -4,19 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sistema de Admissões – Rio Ave</title>
-<script>
-/* ================== CONFIGURAÇÃO ==================
-   Cole aqui os dados do seu projeto Supabase
-   (Supabase > Project Settings > API):
-   - SUPABASE_URL: "Project URL"
-   - SUPABASE_ANON_KEY: chave "anon" / "public"
-   NUNCA use a chave "service_role" aqui.            */
-window.CONFIG = {
-  SUPABASE_URL: "COLE_AQUI_A_URL_DO_PROJETO",
-  SUPABASE_ANON_KEY: "COLE_AQUI_A_CHAVE_ANON"
-};
-/* ================================================== */
-</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦺</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -322,8 +309,8 @@ body.bloqueado{overflow:hidden}
 <dialog id="dlg"></dialog>
 <dialog id="mini" class="mini"></dialog>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 
+<script type="application/json" id="cfgPadrao">{"encarregados": [{"ativo": true, "completo": "Adriano Queiroz Bezerra", "funcao": "Encarregado Civil", "nome": "Adriano", "tel": "(81) 99766-7218"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Alex", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Alves", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Amaro", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Anderson", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Camilla", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Capixaba", "tel": ""}, {"ativo": true, "completo": "Claudio Barbosa dos Reis", "funcao": "Encarregado Hidráulica", "nome": "Claudio", "tel": "(81) 98565-6280"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Eloi", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Emerson", "tel": ""}, {"ativo": true, "completo": "Fernandes José do Nascimento Neto", "funcao": "Encarregado Civil", "nome": "Fernandes", "tel": "(81) 99308-4399"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Gabriel", "tel": ""}, {"ativo": true, "completo": "José Josivaldo da Silva Xavier", "funcao": "Encarregado Carpintaria", "nome": "Josivaldo", "tel": "(81) 98290-8881"}, {"ativo": true, "completo": "Josué José da Silva", "funcao": "Encarregado Civil", "nome": "Josue", "tel": "(81) 98821-6572"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Leonardo", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Nonato", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Pedro", "tel": ""}, {"ativo": true, "completo": "Robson Correia da Silva", "funcao": "Encarregado Elétrica", "nome": "Robson", "tel": "(81) 98405-3467"}, {"ativo": true, "completo": "Silvano Antonio de Freitas", "funcao": "Encarregado de Armação", "nome": "Silvano", "tel": "(81) 98264-9726"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Valter", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "William Jr", "tel": ""}], "funcoes": ["Ajudante Prático", "Armador", "Aux. Administrativo", "Aux. Eletricista", "Aux. Hidráulica", "Aux. Serviços Gerais", "Carpinteiro", "Eletricista", "Encanador", "Encarregado", "Pedreiro", "Pintor", "Servente", "Téc. Segurança do Trabalho"], "indicacoes": ["Absolon", "Adailton", "Adauto(pedreiro)", "Adriano/ Miquelangelo", "Agência", "Aldair (ajudante)/ Camilla", "Alesson (pereiro)", "Alexsando (pedreiro)", "Beltrão", "Braulio", "Campanha", "Emmanuel", "Enildo (Master PG)", "Erenildo", "Erenildo (encanador)", "Fábio", "Glayson", "Guilherme Alves", "Henrique (chaveiro)", "Karol - vovo", "Luiz Fernando (pedreiro)", "Maia", "Maria", "Nelson (pedreiro)", "Rafael (manipuladora)", "Rafael Melo - Auxiliar Unique", "Renan (ajudante)", "Valdeir", "Welisson", "Wellington", "WhatsApp", "William", "William Jr./Braulio", "William Pai"], "lideres": ["Adriano", "Alex", "Alves", "Amaro", "Anderson", "Camilla", "Capixaba", "Claudio", "Eloi", "Emerson", "Gabriel", "Josivaldo", "Josue", "Leonardo", "Nonato", "Pedro", "Robson", "Valter", "William Jr"], "motivos": ["Sem retorno / sem contato", "Já trabalhando / outra proposta", "Desistiu / sem interesse", "Mora longe", "Problema ou falta no exame", "Cancelado pelo líder / obra", "Não enviou documentos", "Saúde / motivo pessoal", "Outro", "Não informado"], "posDesde": "2026-11-01"}</script>
 <script>
 const ETAPAS=[
  {k:"Agendar exame",tone:"var(--amber)",hint:"Sem data de exame"},
@@ -537,7 +524,7 @@ function vPainel(){
   const indL=Object.entries(ind).filter(([,o])=>o.a+o.d+o.p>0).sort((x,y)=>(y[1].a+y[1].d+y[1].p)-(x[1].a+x[1].d+x[1].p)).slice(0,8);
   const logs=[];rs.forEach(r=>(r.log||[]).forEach(l=>{if(l.txt!=="Importado da planilha")logs.push({...l,nome:r.nome,id:r.id})}));
   const rec=logs.sort((a,b)=>b.em.localeCompare(a.em)).slice(0,5);pedirNomes(rec.map(l=>l.por));
-  return`${filtroBar({per:1})}${S.downloads?`<div class="toolbar"><button class="btn sm" data-a="relatorio">Baixar relatório em Excel</button></div>`:""}
+  return`${avisoBackup()}${filtroBar({per:1})}${S.downloads?`<div class="toolbar"><button class="btn sm" data-a="relatorio">Baixar relatório em Excel</button></div>`:""}
   <div class="board">
    <button class="kpi" data-go="processo"><span class="l">Em processo</span><span class="n">${at.length}</span><span class="s">${prox?`${prox} admissão(ões) nos próximos 7 dias`:"candidatos ativos agora"}</span></button>
    <button class="kpi ${atras.length?"alert":""}" data-go="pendencias"><span class="l">Atrasados ou com problema</span><span class="n">${atras.length}</span><span class="s">${atras.length?"parados há mais de 7 dias ou com alerta":"nada travado no momento"}</span></button>
@@ -702,7 +689,7 @@ function vVagas(){
 function vConfig(){
   const C=S.cfg,ed=podeEditar(),dis=ed?"":"disabled",cl=C.clinica||{},ob=C.obra||{},ms=C.msgs||{};
   const ta=(k,t,d)=>`<section class="panel"><h2>${t}</h2><p class="small muted" style="margin-top:0">${d}</p><textarea id="L_${k}" ${ed?"":"readonly"} aria-label="${t}">${esc((C[k]||[]).join("\n"))}</textarea></section>`;
-  return`<section class="panel" style="margin-bottom:12px"><h2>Mensagens do WhatsApp</h2>
+  return backupHtml()+`<section class="panel" style="margin-bottom:12px"><h2>Mensagens do WhatsApp</h2>
    <p class="small muted" style="margin-top:0">Esses dados preenchem as mensagens prontas. O texto pode ser ajustado antes de cada envio.</p>
    <fieldset class="fs" ${dis}><div class="fg">
     <label>Clínica<input id="c_cl_nome" value="${esc(cl.nome||"")}" placeholder="Nome da clínica"></label>
@@ -757,77 +744,85 @@ function render(){
   if(S.inline&&S.inline.focus){const el=$("#inl");if(el){el.focus();S.inline.focus=false}}
 }
 
+/* ---------- armazenamento neste navegador ---------- */
+const CHAVE_DADOS="rioave_admissoes_dados_v1",CHAVE_SENHA="rioave_admissoes_acesso_v1";
+const CFG_PADRAO=JSON.parse(document.getElementById("cfgPadrao").textContent);
+function lerBase(){try{const t=localStorage.getItem(CHAVE_DADOS);if(t){const d=JSON.parse(t);return{candidatos:d.candidatos||[],config:d.config||CFG_PADRAO,backupEm:d.backupEm||""}}}catch(e){}
+  return{candidatos:[],config:JSON.parse(JSON.stringify(CFG_PADRAO)),backupEm:""}}
+let BASE=null;
+function gravarBase(){
+  try{localStorage.setItem(CHAVE_DADOS,JSON.stringify(BASE));return true}
+  catch(e){toast(/quota/i.test(String(e&&e.name||e))?"O espaço do navegador acabou. Faça um backup e fale com o suporte.":"Não foi possível salvar neste navegador.");return false}
+}
+function sincronizarRows(){BASE.candidatos=S.rows.map(dadosLimpos).map((d,i)=>({id:S.rows[i].id,...d}))}
+function novoId(){try{return crypto.randomUUID()}catch(e){return"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}}
+
 /* ---------- pessoas ---------- */
-function nomeDe(id){if(!id)return"";const u=S.usuarios.find(x=>x.id===id);return u?(u.nome||u.email):"Equipe"}
+function nomeDe(id){return id?((S.perfil&&S.perfil.nome)||"Você"):""}
 function pedirNomes(){}
 
-/* ---------- gravação (Supabase) ---------- */
-function tratarErro(e){
-  const c=e&&(e.code||"");const m=String((e&&e.message)||"");
-  if(c==="42501"||/row-level security|permission denied/i.test(m)){toast("Sem permissão para salvar. Seu perfil é somente leitura.")}
-  else if(/JWT|session|token/i.test(m)){toast("Sua sessão expirou. Entre novamente.");sb.auth.signOut()}
-  else toast("Não foi possível salvar agora. Verifique a conexão e tente de novo.");
-}
+/* ---------- gravação ---------- */
+function tratarErro(){toast("Não foi possível salvar agora.")}
 function dadosLimpos(r){const d={};for(const k in r){if(k==="id"||k.startsWith("_"))continue;d[k]=r[k]}return d}
-function aplicarLinha(row){if(!row||!row.id)return;const r={id:row.id,...VAZIO,...(row.dados||{})};const i=S.rows.findIndex(x=>x.id===row.id);if(i>=0)S.rows[i]=r;else S.rows.push(r)}
-async function salvar(id,patch,txt,silencioso){
-  if(!podeEditar())return false;if(S.busy.has(id)){if(!silencioso)toast("Aguarde, salvando…");return false}
+async function salvar(id,patch,txt){
   const cur=S.rows.find(r=>r.id===id);if(!cur)return false;
   const novo={...cur,...patch};
   if(etapa(novo)!==etapa(cur))patch.etapaDesde=hoje();
-  patch.log=[...(cur.log||[]),{em:new Date().toISOString(),por:S.uid||"",txt}].slice(-40);
+  patch.log=[...(cur.log||[]),{em:new Date().toISOString(),por:"local",txt}].slice(-40);
   patch.atualizadoEm=new Date().toISOString();
-  S.busy.add(id);
-  try{
-    let {data,error}=await sb.rpc("adm_mesclar",{p_id:id,p_patch:patch});
-    if(error&&/fetch|network/i.test(String(error.message))){await new Promise(r=>setTimeout(r,800));({data,error}=await sb.rpc("adm_mesclar",{p_id:id,p_patch:patch}))}
-    if(error)throw error;
-    const row=Array.isArray(data)?data[0]:data;if(!row){if(!silencioso)toast("Sem permissão para alterar este registro.");return false}
-    aplicarLinha(row);render();return true;
-  }catch(e){if(!silencioso)tratarErro(e);return false}
-  finally{S.busy.delete(id)}
+  const i=S.rows.indexOf(cur);S.rows[i]={...cur,...patch};sincronizarRows();
+  if(!gravarBase()){S.rows[i]=cur;sincronizarRows();return false}
+  render();return true;
 }
 async function criar(data){
-  if(!podeEditar())return null;const agora=new Date().toISOString();
-  const dados={...data,etapaDesde:hoje(),criadoEm:agora,atualizadoEm:agora,log:[{em:agora,por:S.uid||"",txt:"Cadastrado"}]};
-  const {data:row,error}=await sb.from("adm_candidatos").insert({dados}).select("id,dados").single();
-  if(error){tratarErro(error);return null}
-  aplicarLinha(row);render();return row.id;
+  const agora=new Date().toISOString(),id=novoId();
+  S.rows.push({id,...VAZIO,...data,etapaDesde:hoje(),criadoEm:agora,atualizadoEm:agora,log:[{em:agora,por:"local",txt:"Cadastrado"}]});sincronizarRows();
+  if(!gravarBase()){S.rows.pop();sincronizarRows();return null}
+  render();return id;
 }
 async function salvarConfig(parcial){
   const C=S.cfg;const doc={funcoes:C.funcoes||[],indicacoes:C.indicacoes||[],motivos:C.motivos||MOTIVOS_PADRAO,vagas:C.vagas||[],encarregados:C.encarregados||[],
     clinica:C.clinica||{},obra:C.obra||{},msgs:C.msgs||{},posDesde:posDesde(),lideres:C.lideres||[],...parcial};
-  const {error}=await sb.from("adm_config").upsert({id:"listas",dados:doc});
-  if(error){tratarErro(error);return false}
+  const ant=BASE.config;BASE.config=doc;if(!gravarBase()){BASE.config=ant;return false}
   aplicarConfig(doc);render();return true;
 }
 function aplicarConfig(d){d=d||{};S.cfg={funcoes:d.funcoes||[],indicacoes:d.indicacoes||[],motivos:(d.motivos&&d.motivos.length)?d.motivos:MOTIVOS_PADRAO,vagas:d.vagas||[],
   encarregados:d.encarregados||[],clinica:d.clinica||{},obra:d.obra||{},msgs:d.msgs||{},posDesde:d.posDesde||POS_DESDE_PADRAO,lideres:d.lideres||[]}}
 
-/* ---------- usuários (somente administrador) ---------- */
-const PAPEIS={pendente:"Aguardando aprovação",gestao:"Gestão (só visualiza)",rh:"RH (edita)",admin:"Administrador"};
-function vUsuarios(){
-  if(!ehAdmin())return`<div class="empty">Somente administradores acessam esta tela.</div>`;
-  const us=[...S.usuarios].sort((a,b)=>((a.papel==="pendente")===(b.papel==="pendente")?(a.nome||a.email).localeCompare(b.nome||b.email,"pt"):a.papel==="pendente"?-1:1));
-  const pend=us.filter(u=>u.papel==="pendente").length;
-  return`<p class="muted" style="margin-top:0">Quem entra pela primeira vez solicita acesso e aparece aqui como “Aguardando aprovação”. Escolha o perfil e salve para liberar.</p>
-  ${pend?`<div class="banner">${pend} pessoa(s) aguardando aprovação.</div>`:""}
-  <div class="tw"><table class="etab"><thead><tr><th>Nome</th><th>E-mail</th><th style="min-width:200px">Perfil</th><th>Ativo</th><th>Desde</th><th></th></tr></thead><tbody>
-  ${us.map(u=>{const eu=u.id===S.uid;return`<tr><td><b style="font-weight:600">${esc(u.nome||"—")}</b>${eu?` <span class="small muted">(você)</span>`:""}</td><td>${esc(u.email)}</td>
-   <td><select data-ui="${u.id}" data-uk="papel" ${eu?"disabled":""} aria-label="Perfil de ${esc(u.nome||u.email)}">${Object.entries(PAPEIS).map(([k,t])=>`<option value="${k}" ${u.papel===k?"selected":""}>${t}</option>`).join("")}</select></td>
-   <td style="text-align:center"><input type="checkbox" data-ui="${u.id}" data-uk="ativo" ${u.ativo?"checked":""} ${eu?"disabled":""} aria-label="Ativo"></td>
-   <td class="small">${br((u.criado_em||"").slice(0,10))}</td><td>${eu?"":`<button class="btn sm pri" data-usave="${u.id}">Salvar</button>`}</td></tr>`}).join("")}
-  </tbody></table></div>
-  <div class="panel" style="margin-top:14px"><h2>Perfis</h2><p class="small" style="margin:0">
-   <b>Administrador:</b> tudo, inclusive aprovar usuários. <b>RH:</b> cadastra e edita candidatos, listas e configurações. <b>Gestão:</b> só visualiza (CPF aparece mascarado). Desmarcar “Ativo” bloqueia o acesso sem apagar o histórico.</p></div>`;
+/* ---------- backup ---------- */
+const ehAdmin=()=>false;
+function vUsuarios(){return`<div class="empty">Esta versão tem um único usuário.</div>`}
+function diasDesdeBackup(){return BASE&&BASE.backupEm?difDias(BASE.backupEm.slice(0,10),hoje()):null}
+function avisoBackup(){
+  if(!BASE||!S.rows.length)return"";const d=diasDesdeBackup();
+  if(d!==null&&d<7)return"";
+  return`<div class="banner">${d===null?"Você ainda não fez nenhum backup.":`Último backup há ${d} dias.`} Os dados ficam só neste navegador: <a href="#config" data-go="config">faça um backup</a> pelo menos uma vez por semana.</div>`;
 }
-const ehAdmin=()=>S.perfil&&S.perfil.papel==="admin"&&S.perfil.ativo;
-async function salvarUsuario(id){
-  const sel=document.querySelector(`[data-ui="${id}"][data-uk="papel"]`),ck=document.querySelector(`[data-ui="${id}"][data-uk="ativo"]`);
-  const {error}=await sb.from("adm_usuarios").update({papel:sel.value,ativo:ck.checked}).eq("id",id);
-  if(error){tratarErro(error);return}
-  const u=S.usuarios.find(x=>x.id===id);if(u){u.papel=sel.value;u.ativo=ck.checked}toast("Usuário atualizado");render();
+function backupHtml(){
+  const d=diasDesdeBackup();
+  return`<section class="panel" style="margin-bottom:12px"><h2>Backup dos dados</h2>
+   <p class="small muted" style="margin-top:0">Os dados ficam guardados só neste navegador, neste computador. Limpar os dados de navegação, trocar de computador ou usar janela anônima faz perder o acesso a eles. Faça o backup com frequência e guarde o arquivo numa pasta segura (ele contém dados pessoais dos candidatos).</p>
+   <p class="small">${BASE.backupEm?`Último backup: <b>${br(BASE.backupEm.slice(0,10))}</b>${d?` (há ${d} dia${d>1?"s":""})`:" (hoje)"}`:"<b>Nenhum backup feito ainda.</b>"} · ${S.rows.length} candidato(s) cadastrados.</p>
+   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" data-a="exportarBackup">Baixar backup</button>
+   <label class="btn" for="impFile" style="cursor:pointer">Restaurar backup</label><input type="file" id="impFile" accept=".json,application/json" hidden></div>
+   <p class="small muted" style="margin-bottom:0">Restaurar substitui todos os dados deste navegador pelos do arquivo escolhido. Use também para passar os dados para outro computador.</p></section>`;
 }
+function exportarBackup(){
+  sincronizarRows();const agora=new Date().toISOString();
+  const conteudo=JSON.stringify({sistema:"rioave-admissoes",versao:1,geradoEm:agora,candidatos:BASE.candidatos,config:BASE.config},null,1);
+  const blob=new Blob([conteudo],{type:"application/json"}),a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=`backup-admissoes-${hoje()}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  BASE.backupEm=agora;gravarBase();toast("Backup baixado");render();
+}
+async function importarBackup(file){
+  let d;try{d=JSON.parse(await file.text())}catch(e){toast("Arquivo inválido. Escolha um backup .json gerado pelo sistema.");return}
+  if(!d||d.sistema!=="rioave-admissoes"||!Array.isArray(d.candidatos)){toast("Este arquivo não é um backup do sistema de admissões.");return}
+  pedir({titulo:"Restaurar backup?",texto:`O arquivo tem <b>${d.candidatos.length}</b> candidato(s), gerado em ${br((d.geradoEm||"").slice(0,10))}. Os <b>${S.rows.length}</b> candidato(s) atuais deste navegador serão substituídos. Isso não pode ser desfeito.`,ok:"Restaurar",okCls:"danger"},()=>{
+    BASE={candidatos:d.candidatos,config:d.config||BASE.config,backupEm:d.geradoEm||""};
+    if(!gravarBase())return;S.rows=BASE.candidatos.map(c=>({...VAZIO,...c}));aplicarConfig(BASE.config);toast("Backup restaurado");render()});
+}
+document.addEventListener("change",ev=>{if(ev.target.id==="impFile"&&ev.target.files[0]){importarBackup(ev.target.files[0]);ev.target.value=""}});
+window.addEventListener("storage",ev=>{if(ev.key===CHAVE_DADOS&&S.loaded){BASE=lerBase();S.rows=BASE.candidatos.map(c=>({...VAZIO,...c}));aplicarConfig(BASE.config);render()}});
 
 /* ---------- checklists em janela ---------- */
 function ckDocsHtml(d,ro){
@@ -1076,11 +1071,11 @@ document.addEventListener("click",async ev=>{
   else if(a==="salvarPos"){const v=$("#c_posDesde").value;if(!v){toast("Informe a data.");return}if(await salvarConfig({posDesde:v})){$("#c_posDesde").blur();toast("Data salva");render()}}
   else if(a==="salvarListas"){const L={};["funcoes","indicacoes","motivos"].forEach(k=>L[k]=[...new Set($("#L_"+k).value.split("\n").map(s=>s.trim()).filter(Boolean))]);
     if(await salvarConfig(L)){document.activeElement&&document.activeElement.blur();toast("Listas salvas");render()}}
+  else if(a==="exportarBackup")exportarBackup();
   else if(a==="relatorio")relatorio();
   else if(a==="expProcesso")baixar(`Em_processo_${hoje()}.xlsx`,[["Em processo",listaProcesso().map(linhaExp)]]);
   else if(a==="expHistorico")baixar(`${S.h.tab==="Admitido"?"Admitidos":"Desistencias"}_${hoje()}.xlsx`,[[S.h.tab==="Admitido"?"Admitidos":"Desistências",listaHistorico().map(linhaExp)]]);
 });
-document.addEventListener("click",ev=>{const b=ev.target.closest("[data-usave]");if(b)salvarUsuario(b.dataset.usave)});
 document.addEventListener("keydown",ev=>{if((ev.key==="Enter"||ev.key===" ")&&ev.target.matches&&ev.target.matches("[data-docs],[data-pos]")){ev.preventDefault();ev.target.click()}});
 $("#btnNovo").addEventListener("click",()=>abrir(null));
 document.addEventListener("change",ev=>{const t=ev.target;if(t.closest("#dlg")||t.closest("#mini"))return;
@@ -1110,137 +1105,71 @@ $("#scrim").addEventListener("click",fecharMenu);
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&document.body.classList.contains("menu"))fecharMenu()});
 render();
 
-/* ---------- login e início (Supabase) ---------- */
-const CFG=window.CONFIG||{};
-const configurado=CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&!/COLE_AQUI|SEU-PROJETO/.test(CFG.SUPABASE_URL+CFG.SUPABASE_ANON_KEY);
-const sb=configurado&&window.supabase?window.supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
-S.db=sb;S.usuarios=[];S.perfil=null;S.auth="carregando";S.canal=null;
+/* ---------- acesso com senha (neste navegador) ---------- */
+S.db=true;S.canWrite=true;S.usuarios=[];S.perfil=null;S.auth="carregando";
 S.downloads={save:async({filename,data})=>{const blob=new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);return{status:"saved"}}};
 const LOGO=document.querySelector(".sbrand .logoimg").getAttribute("src");
-
-function telaSetup(semConfig){
-  const passos=semConfig?`<ol class="steps">
-   <li>Crie uma conta grátis em <b>supabase.com</b> e um <b>New project</b> (região São Paulo).</li>
-   <li>No projeto, abra <b>SQL Editor → New query</b>, cole todo o conteúdo do arquivo <code>comandos-supabase.sql</code> e clique em <b>Run</b>.</li>
-   <li>Em <b>Project Settings → API</b>, copie a <b>Project URL</b> e a chave <b>anon public</b>.</li>
-   <li>Cole os dois valores no bloco <b>CONFIGURAÇÃO</b>, no início deste <code>index.html</code>.</li>
-   <li>Em <b>Authentication → URL Configuration</b>, coloque o endereço do GitHub Pages em <b>Site URL</b>.</li>
-   <li>Envie o <code>index.html</code> ao GitHub, ative o Pages e entre: o primeiro cadastro vira administrador.</li></ol>`
-   :`<p class="small">O sistema conectou ao Supabase, mas as tabelas ainda não existem. Abra <b>SQL Editor → New query</b> no projeto, cole o conteúdo do arquivo <code>comandos-supabase.sql</code>, clique em <b>Run</b> e recarregue esta página.</p><p class="alinks"><a href="#" data-auth="sair">Sair</a></p>`;
-  return`<h1>${semConfig?"Configurar o sistema":"Falta criar o banco"}</h1>${passos}`;
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+async function derivar(senha,salHex){
+  const sal=new Uint8Array(salHex.match(/../g).map(h=>parseInt(h,16)));
+  const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(senha),"PBKDF2",false,["deriveBits"]);
+  return hex(await crypto.subtle.deriveBits({name:"PBKDF2",salt:sal,iterations:150000,hash:"SHA-256"},k,256));
 }
+const lerAcesso=()=>{try{return JSON.parse(localStorage.getItem(CHAVE_SENHA)||"null")}catch(e){return null}};
+
 function telaAuth(msg,tipo){
   const el=$("#auth");document.body.classList.add("bloqueado");el.hidden=false;
   const m=msg?`<p class="amsg ${tipo||""}" role="status">${msg}</p>`:"";
-  const caixa=c=>`<div class="abox ${(!sb||S.auth==="setup")?"wide":""}"><img src="${LOGO}" alt="Rio Ave" class="alogo"><p class="asys">Sistema de admissões</p>${m}${c}</div>`;
-  const a=S.auth;let h;
-  if(!sb||a==="setup")h=caixa(telaSetup(!sb));
-  else if(a==="carregando")h=caixa(`<p class="small muted">Carregando…</p>`);
-  else if(a==="login")h=caixa(`<h1>Entrar</h1><form id="fLogin" novalidate><label>E-mail<input type="email" id="aEmail" autocomplete="username" required></label>
+  const caixa=c=>`<div class="abox"><img src="${LOGO}" alt="Rio Ave" class="alogo"><p class="asys">Sistema de admissões</p>${m}${c}</div>`;
+  const ac=lerAcesso(),a=S.auth;let h;
+  if(!window.crypto||!crypto.subtle)h=caixa(`<h1>Navegador sem suporte</h1><p class="small">Abra o sistema pelo endereço do GitHub Pages (https) em um navegador atualizado, como Chrome ou Edge.</p>`);
+  else if(a==="criar"||!ac)h=caixa(`<h1>Primeiro acesso</h1><p class="small muted" style="margin-top:0">Crie a senha que vai proteger o sistema neste computador.</p>
+    <form id="fCriar" novalidate><label>Seu nome<input id="aNome" autocomplete="name" required></label>
+    <label>Senha (mínimo 6 caracteres)<input type="password" id="aSenha" autocomplete="new-password" required></label>
+    <label>Repita a senha<input type="password" id="aSenha2" autocomplete="new-password" required></label>
+    <button class="btn pri" type="submit">Criar senha e entrar</button></form>`);
+  else if(a==="esqueci")h=caixa(`<h1>Esqueci minha senha</h1><p class="small">A senha fica guardada só neste navegador e não tem como ser recuperada. Você pode criar uma nova senha: <b>os candidatos cadastrados são mantidos</b>.</p>
+    <form id="fRedef" novalidate><label>Para confirmar, digite REDEFINIR<input id="aConf" autocomplete="off" required></label><button class="btn pri" type="submit">Criar nova senha</button></form>
+    <p class="alinks"><a href="#" data-auth="entrar">Voltar</a></p>`);
+  else h=caixa(`<h1>Entrar</h1><p class="small muted" style="margin-top:0">Olá, ${esc(ac.nome||"")}.</p><form id="fEntrar" novalidate>
     <label>Senha<input type="password" id="aSenha" autocomplete="current-password" required></label><button class="btn pri" type="submit">Entrar</button></form>
-    <p class="alinks"><a href="#" data-auth="esqueci">Esqueci minha senha</a><a href="#" data-auth="cadastro">Não tenho cadastro</a></p>`);
-  else if(a==="esqueci")h=caixa(`<h1>Recuperar senha</h1><form id="fEsqueci" novalidate><label>E-mail<input type="email" id="aEmail" autocomplete="username" required></label>
-    <button class="btn pri" type="submit">Enviar link</button></form><p class="small muted">Você recebe um e-mail com o link para criar uma nova senha.</p>
-    <p class="alinks"><a href="#" data-auth="login">Voltar para o login</a></p>`);
-  else if(a==="nova")h=caixa(`<h1>Nova senha</h1><form id="fNova" novalidate><label>Nova senha<input type="password" id="aSenha" autocomplete="new-password" minlength="8" required></label>
-    <label>Repita a nova senha<input type="password" id="aSenha2" autocomplete="new-password" required></label><button class="btn pri" type="submit">Salvar nova senha</button></form>`);
-  else if(a==="cadastro")h=caixa(`<h1>Criar cadastro</h1><form id="fCad" novalidate><label>Nome completo<input id="aNome" autocomplete="name" required></label>
-    <label>E-mail<input type="email" id="aEmail" autocomplete="username" required></label><label>Senha (mínimo 8 caracteres)<input type="password" id="aSenha" autocomplete="new-password" minlength="8" required></label>
-    <button class="btn pri" type="submit">Criar cadastro</button></form><p class="small muted">O primeiro cadastro do sistema vira administrador. Os seguintes aguardam a aprovação de um administrador.</p>
-    <p class="alinks"><a href="#" data-auth="login">Já tenho cadastro</a></p>`);
-  else if(a==="solicitar")h=caixa(`<h1>Solicitar acesso</h1><p class="small">Você entrou como <b>${esc(S.sess.user.email)}</b>, mas ainda não tem acesso ao Sistema de Admissões.</p>
-    <form id="fSol" novalidate><label>Seu nome<input id="aNome" value="${esc((S.sess.user.user_metadata||{}).name||(S.sess.user.user_metadata||{}).nome||"")}" autocomplete="name" required></label>
-    <button class="btn pri" type="submit">Solicitar acesso</button></form><p class="alinks"><a href="#" data-auth="sair">Sair</a></p>`);
-  else if(a==="pendente")h=caixa(`<h1>${S.perfil&&!S.perfil.ativo?"Acesso bloqueado":"Aguardando aprovação"}</h1><p class="small">${S.perfil&&!S.perfil.ativo?"Seu acesso foi desativado. Fale com o administrador do sistema.":"Sua solicitação foi enviada. Assim que um administrador aprovar, o sistema abre sozinho nesta tela."}</p>
-    <p class="alinks"><a href="#" data-auth="sair">Sair</a></p>`);
-  el.innerHTML=h;
-  const f=el.querySelector("form input");if(f)f.focus();
+    <p class="alinks"><a href="#" data-auth="esqueci">Esqueci minha senha</a></p>`);
+  el.innerHTML=h;const f=el.querySelector("form input");if(f)f.focus();
 }
 function fecharAuth(){$("#auth").hidden=true;$("#auth").innerHTML="";document.body.classList.remove("bloqueado")}
-const erroAuth=e=>{const m=String((e&&e.message)||"");
-  if(/Invalid login/i.test(m))return"E-mail ou senha incorretos.";if(/Email not confirmed/i.test(m))return"Confirme seu e-mail pelo link que recebeu antes de entrar.";
-  if(/Signups not allowed|signup.*disabled/i.test(m))return"O cadastro está desativado. Peça ao administrador para criar seu usuário.";
-  if(/already registered/i.test(m))return"Este e-mail já tem cadastro. Use “Esqueci minha senha” se precisar.";
-  if(/Password should be/i.test(m))return"A senha precisa ter pelo menos 8 caracteres.";
-  if(/rate limit/i.test(m))return"Muitas tentativas. Aguarde alguns minutos.";return"Não foi possível concluir agora. Tente novamente."};
+function entrarNoSistema(nome){
+  try{sessionStorage.setItem("rioave_admissoes_sessao","1")}catch(e){}
+  S.perfil={nome,papel:"admin",ativo:true};fecharAuth();desenharUsuario();
+  BASE=lerBase();S.rows=BASE.candidatos.map(c=>({...VAZIO,...c}));aplicarConfig(BASE.config);S.loaded=true;S.stale=false;
+  $("#sync").textContent="Dados salvos neste navegador";render();
+}
 document.addEventListener("submit",async ev=>{
   const f=ev.target;if(!f.closest||!f.closest("#auth"))return;ev.preventDefault();
-  const v=id=>{const e=$("#"+id);return e?e.value.trim():""};const btn=f.querySelector("button[type=submit]");btn.disabled=true;
+  const btn=f.querySelector("button[type=submit]");btn.disabled=true;
   try{
-    if(f.id==="fLogin"){if(!v("aEmail")||!$("#aSenha").value)return telaAuth("Informe e-mail e senha.","err");
-      const {error}=await sb.auth.signInWithPassword({email:v("aEmail"),password:$("#aSenha").value});if(error)telaAuth(erroAuth(error),"err")}
-    else if(f.id==="fEsqueci"){if(!v("aEmail"))return telaAuth("Informe seu e-mail.","err");
-      const {error}=await sb.auth.resetPasswordForEmail(v("aEmail"),{redirectTo:location.href.split("#")[0]});
-      S.auth="login";telaAuth(error?erroAuth(error):"Se o e-mail estiver cadastrado, você vai receber o link em instantes.",error?"err":"ok")}
-    else if(f.id==="fNova"){const a=$("#aSenha").value,b=$("#aSenha2").value;if(a.length<8)return telaAuth("A senha precisa ter pelo menos 8 caracteres.","err");if(a!==b)return telaAuth("As senhas não conferem.","err");
-      const {error}=await sb.auth.updateUser({password:a});if(error)return telaAuth(erroAuth(error),"err");toast("Senha alterada");history.replaceState(null,"",location.pathname);iniciarSessao((await sb.auth.getSession()).data.session,true)}
-    else if(f.id==="fCad"){if(!v("aNome")||!v("aEmail")||$("#aSenha").value.length<8)return telaAuth("Preencha nome, e-mail e uma senha com pelo menos 8 caracteres.","err");
-      const {data,error}=await sb.auth.signUp({email:v("aEmail"),password:$("#aSenha").value,options:{data:{name:v("aNome")},emailRedirectTo:location.href.split("#")[0]}});
-      if(error)return telaAuth(erroAuth(error),"err");if(!data.session){S.auth="login";telaAuth("Cadastro criado. Confirme pelo link enviado ao seu e-mail e depois entre aqui.","ok")}}
-    else if(f.id==="fSol"){if(!v("aNome"))return telaAuth("Informe seu nome.","err");
-      const {error}=await sb.from("adm_usuarios").insert({id:S.uid,nome:v("aNome"),email:S.sess.user.email,papel:"pendente"});
-      if(error&&error.code!=="23505")return telaAuth(erroAuth(error),"err");await carregarPerfil()}
+    if(f.id==="fCriar"){const nome=$("#aNome").value.trim(),a=$("#aSenha").value,b=$("#aSenha2").value;
+      if(!nome)return telaAuth("Informe seu nome.","err");if(a.length<6)return telaAuth("A senha precisa ter pelo menos 6 caracteres.","err");if(a!==b)return telaAuth("As senhas não conferem.","err");
+      const sal=hex(crypto.getRandomValues(new Uint8Array(16)));const hash=await derivar(a,sal);
+      localStorage.setItem(CHAVE_SENHA,JSON.stringify({nome,sal,hash,criadoEm:new Date().toISOString()}));S.auth="entrar";entrarNoSistema(nome)}
+    else if(f.id==="fEntrar"){const ac=lerAcesso();const hash=await derivar($("#aSenha").value,ac.sal);
+      if(hash!==ac.hash){S._erros=(S._erros||0)+1;await new Promise(r=>setTimeout(r,Math.min(4000,400*S._erros)));return telaAuth("Senha incorreta.","err")}
+      S._erros=0;entrarNoSistema(ac.nome)}
+    else if(f.id==="fRedef"){if($("#aConf").value.trim().toUpperCase()!=="REDEFINIR")return telaAuth("Digite REDEFINIR para confirmar.","err");
+      localStorage.removeItem(CHAVE_SENHA);S.auth="criar";telaAuth("Crie a nova senha. Seus dados foram mantidos.","ok")}
   }finally{if(document.contains(btn))btn.disabled=false}
 });
 document.addEventListener("click",ev=>{const a=ev.target.closest("[data-auth]");if(!a)return;ev.preventDefault();
   if(a.dataset.auth==="sair"){sair();return}S.auth=a.dataset.auth;telaAuth()});
-async function sair(){pararDados();await sb.auth.signOut();S.sess=null;S.perfil=null;S.rows=[];S.loaded=false;S.auth="login";telaAuth()}
+function sair(){try{sessionStorage.removeItem("rioave_admissoes_sessao")}catch(e){}$("#dlg").open&&$("#dlg").close();$("#mini").open&&$("#mini").close();S.auth="entrar";telaAuth()}
+function desenharUsuario(){const p=S.perfil;$("#ufoot").innerHTML=p?`<div class="uname">${esc(p.nome)}</div><div class="urole">Acesso neste computador</div><button type="button" class="btn sm ghost" data-auth="sair">Sair</button>`:""}
+/* bloqueia depois de 30 minutos sem uso */
+let ultimoUso=Date.now();["click","keydown","pointermove","scroll"].forEach(e=>document.addEventListener(e,()=>{ultimoUso=Date.now()},{passive:true}));
+setInterval(()=>{if(S.perfil&&$("#auth").hidden&&Date.now()-ultimoUso>30*60*1000){sair();telaAuth("Sistema bloqueado por inatividade. Entre novamente.")}},60000);
 
-async function iniciarSessao(session,forcar){
-  if(!session){if(S.auth==="nova")return;pararDados();S.sess=null;S.perfil=null;S.loaded=false;S.auth="login";telaAuth();return}
-  const mesmo=S.sess&&S.sess.user.id===session.user.id;S.sess=session;S.uid=session.user.id;
-  if(mesmo&&!forcar&&S.loaded)return;
-  if(S._ini===session.user.id&&!forcar)return;S._ini=session.user.id;
-  try{await carregarPerfil()}finally{S._ini=null}
-}
-async function carregarPerfil(){
-  const {data,error}=await sb.from("adm_usuarios").select("*").eq("id",S.uid).maybeSingle();
-  if(error){if(/42P01|PGRST20|does not exist|Could not find the table/i.test((error.code||"")+" "+(error.message||""))){S.auth="setup";telaAuth();return}
-    S.auth="login";telaAuth("Não foi possível verificar seu acesso agora. Tente novamente.","err");return}
-  S.perfil=data;
-  if(!data){const nm=((S.sess.user.user_metadata||{}).name||"").trim();
-    if(nm&&!S._autoSol){S._autoSol=true;const r=await sb.from("adm_usuarios").insert({id:S.uid,nome:nm,email:S.sess.user.email,papel:"pendente"});if(!r.error||r.error.code==="23505")return carregarPerfil()}
-    S.auth="solicitar";telaAuth();return}
-  if(data.papel==="pendente"||!data.ativo){S.auth="pendente";telaAuth();assinarPerfil();return}
-  S.canWrite=["rh","admin"].includes(data.papel)?true:false;
-  fecharAuth();desenharUsuario();await carregarDados();
-}
-let canalPerfil=null;
-function assinarPerfil(){if(canalPerfil)return;canalPerfil=sb.channel("adm_perfil_"+S.uid).on("postgres_changes",{event:"*",schema:"public",table:"adm_usuarios",filter:"id=eq."+S.uid},()=>carregarPerfil()).subscribe()}
-function desenharUsuario(){const p=S.perfil;$("#ufoot").innerHTML=p?`<div class="uname">${esc(p.nome||p.email)}</div><div class="urole">${esc(PAPEIS[p.papel]||p.papel)}</div><button type="button" class="btn sm ghost" data-auth="sair">Sair</button>`:""}
-async function carregarDados(){
-  const sync=$("#sync");sync.textContent="Carregando dados…";
-  try{
-    const todos=[];for(let de=0;;de+=1000){const {data,error}=await sb.from("adm_candidatos").select("id,dados").order("criado_em").range(de,de+999);if(error)throw error;todos.push(...data);if(data.length<1000)break}
-    const [cf,us]=await Promise.all([sb.from("adm_config").select("dados").eq("id","listas").maybeSingle(),sb.from("adm_usuarios").select("*")]);
-    if(cf.error)throw cf.error;
-    S.rows=todos.map(r=>({id:r.id,...VAZIO,...(r.dados||{})}));aplicarConfig(cf.data&&cf.data.dados);S.usuarios=us.data||[];
-    S.loaded=true;S.stale=false;render();assinar();
-  }catch(e){S.stale=true;sync.textContent="Sem conexão com os dados";render();setTimeout(()=>{if(!S.loaded&&S.sess)carregarDados()},8000)}
-}
-function assinar(){
-  pararDados(true);const sync=$("#sync");
-  S.canal=sb.channel("adm_dados")
-   .on("postgres_changes",{event:"*",schema:"public",table:"adm_candidatos"},p=>{if(p.eventType==="DELETE"){S.rows=S.rows.filter(r=>r.id!==p.old.id)}else aplicarLinha(p.new);render()})
-   .on("postgres_changes",{event:"*",schema:"public",table:"adm_config"},p=>{if(p.new&&p.new.id==="listas"){aplicarConfig(p.new.dados);render()}})
-   .on("postgres_changes",{event:"*",schema:"public",table:"adm_usuarios"},p=>{if(p.eventType==="DELETE"){S.usuarios=S.usuarios.filter(u=>u.id!==p.old.id)}else{const i=S.usuarios.findIndex(u=>u.id===p.new.id);if(i>=0)S.usuarios[i]=p.new;else S.usuarios.push(p.new);
-      if(p.new.id===S.uid){S.perfil=p.new;if(p.new.papel==="pendente"||!p.new.ativo){carregarPerfil();return}S.canWrite=["rh","admin"].includes(p.new.papel);desenharUsuario()}}render()})
-   .subscribe(st=>{sync.textContent=st==="SUBSCRIBED"?"Online • atualização em tempo real":st==="CLOSED"?"Desconectado":"Reconectando…";
-     if(st==="SUBSCRIBED"&&S._caiu){S._caiu=false;carregarDados()}if(st==="CHANNEL_ERROR"||st==="TIMED_OUT")S._caiu=true});
-}
-function pararDados(soCanal){if(S.canal){sb.removeChannel(S.canal);S.canal=null}if(!soCanal&&canalPerfil){sb.removeChannel(canalPerfil);canalPerfil=null}}
-
-(async()=>{
-  if(!sb){telaAuth();return}
-  telaAuth();
-  sb.auth.onAuthStateChange((ev,session)=>{
-    if(ev==="PASSWORD_RECOVERY"){S.sess=session;S.auth="nova";telaAuth();return}
-    if(ev==="SIGNED_OUT"){iniciarSessao(null);return}
-    if(ev==="SIGNED_IN"||ev==="INITIAL_SESSION"||ev==="USER_UPDATED")setTimeout(()=>{if(S.auth!=="nova")iniciarSessao(session)},0);
-  });
-  const {data}=await sb.auth.getSession();
-  if(S.auth!=="nova")iniciarSessao(data.session);
+(()=>{
+  const ac=lerAcesso();let ativa=false;try{ativa=sessionStorage.getItem("rioave_admissoes_sessao")==="1"}catch(e){}
+  if(ac&&ativa)entrarNoSistema(ac.nome);else{S.auth=ac?"entrar":"criar";telaAuth()}
 })();
 
 </script>
