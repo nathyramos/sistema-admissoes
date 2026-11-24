@@ -287,6 +287,11 @@ body.bloqueado{overflow:hidden}
 .steps{font-size:14px;line-height:1.55;padding-left:20px;margin:0 0 14px}
 .steps li{margin-bottom:6px}
 .sqlbox{width:100%;min-height:200px;background:#0D0D0E;color:#C9CBD0;border:1px solid #2E2F33;border-radius:6px;font:12px/1.45 ui-monospace,Consolas,monospace;padding:10px;margin:4px 0 10px;white-space:pre}
+
+.rfs{border:1px solid var(--line);border-radius:8px;padding:8px 12px 10px;margin:0 0 10px}
+.rfs legend{font-size:13px;color:var(--ink2);padding:0 4px}
+.ropt{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px;cursor:pointer}
+.ropt input{accent-color:var(--ink);width:16px;height:16px}
 </style>
 </head>
 <body>
@@ -309,6 +314,8 @@ body.bloqueado{overflow:hidden}
 <dialog id="dlg"></dialog>
 <dialog id="mini" class="mini"></dialog>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@5.0.9/dist/jspdf.plugin.autotable.min.js"></script>
 
 <script type="application/json" id="cfgPadrao">{"encarregados": [{"ativo": true, "completo": "Adriano Queiroz Bezerra", "funcao": "Encarregado Civil", "nome": "Adriano", "tel": "(81) 99766-7218"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Alex", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Alves", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Amaro", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Anderson", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Camilla", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Capixaba", "tel": ""}, {"ativo": true, "completo": "Claudio Barbosa dos Reis", "funcao": "Encarregado Hidráulica", "nome": "Claudio", "tel": "(81) 98565-6280"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Eloi", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Emerson", "tel": ""}, {"ativo": true, "completo": "Fernandes José do Nascimento Neto", "funcao": "Encarregado Civil", "nome": "Fernandes", "tel": "(81) 99308-4399"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Gabriel", "tel": ""}, {"ativo": true, "completo": "José Josivaldo da Silva Xavier", "funcao": "Encarregado Carpintaria", "nome": "Josivaldo", "tel": "(81) 98290-8881"}, {"ativo": true, "completo": "Josué José da Silva", "funcao": "Encarregado Civil", "nome": "Josue", "tel": "(81) 98821-6572"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Leonardo", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Nonato", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "Pedro", "tel": ""}, {"ativo": true, "completo": "Robson Correia da Silva", "funcao": "Encarregado Elétrica", "nome": "Robson", "tel": "(81) 98405-3467"}, {"ativo": true, "completo": "Silvano Antonio de Freitas", "funcao": "Encarregado de Armação", "nome": "Silvano", "tel": "(81) 98264-9726"}, {"ativo": true, "completo": "", "funcao": "", "nome": "Valter", "tel": ""}, {"ativo": true, "completo": "", "funcao": "", "nome": "William Jr", "tel": ""}], "funcoes": ["Ajudante Prático", "Armador", "Aux. Administrativo", "Aux. Eletricista", "Aux. Hidráulica", "Aux. Serviços Gerais", "Carpinteiro", "Eletricista", "Encanador", "Encarregado", "Pedreiro", "Pintor", "Servente", "Téc. Segurança do Trabalho"], "indicacoes": ["Absolon", "Adailton", "Adauto(pedreiro)", "Adriano/ Miquelangelo", "Agência", "Aldair (ajudante)/ Camilla", "Alesson (pereiro)", "Alexsando (pedreiro)", "Beltrão", "Braulio", "Campanha", "Emmanuel", "Enildo (Master PG)", "Erenildo", "Erenildo (encanador)", "Fábio", "Glayson", "Guilherme Alves", "Henrique (chaveiro)", "Karol - vovo", "Luiz Fernando (pedreiro)", "Maia", "Maria", "Nelson (pedreiro)", "Rafael (manipuladora)", "Rafael Melo - Auxiliar Unique", "Renan (ajudante)", "Valdeir", "Welisson", "Wellington", "WhatsApp", "William", "William Jr./Braulio", "William Pai"], "lideres": ["Adriano", "Alex", "Alves", "Amaro", "Anderson", "Camilla", "Capixaba", "Claudio", "Eloi", "Emerson", "Gabriel", "Josivaldo", "Josue", "Leonardo", "Nonato", "Pedro", "Robson", "Valter", "William Jr"], "motivos": ["Sem retorno / sem contato", "Já trabalhando / outra proposta", "Desistiu / sem interesse", "Mora longe", "Problema ou falta no exame", "Cancelado pelo líder / obra", "Não enviou documentos", "Saúde / motivo pessoal", "Outro", "Não informado"], "posDesde": "2026-11-01"}</script>
 <script>
@@ -524,7 +531,7 @@ function vPainel(){
   const indL=Object.entries(ind).filter(([,o])=>o.a+o.d+o.p>0).sort((x,y)=>(y[1].a+y[1].d+y[1].p)-(x[1].a+x[1].d+x[1].p)).slice(0,8);
   const logs=[];rs.forEach(r=>(r.log||[]).forEach(l=>{if(l.txt!=="Importado da planilha")logs.push({...l,nome:r.nome,id:r.id})}));
   const rec=logs.sort((a,b)=>b.em.localeCompare(a.em)).slice(0,5);pedirNomes(rec.map(l=>l.por));
-  return`${avisoBackup()}${filtroBar({per:1})}${S.downloads?`<div class="toolbar"><button class="btn sm" data-a="relatorio">Baixar relatório em Excel</button></div>`:""}
+  return`${avisoBackup()}${filtroBar({per:1})}${S.downloads?`<div class="toolbar"><button class="btn sm pri" data-a="relatorio">Gerar relatório (PDF ou Excel)</button></div>`:""}
   <div class="board">
    <button class="kpi" data-go="processo"><span class="l">Em processo</span><span class="n">${at.length}</span><span class="s">${prox?`${prox} admissão(ões) nos próximos 7 dias`:"candidatos ativos agora"}</span></button>
    <button class="kpi ${atras.length?"alert":""}" data-go="pendencias"><span class="l">Atrasados ou com problema</span><span class="n">${atras.length}</span><span class="s">${atras.length?"parados há mais de 7 dias ou com alerta":"nada travado no momento"}</span></button>
@@ -991,18 +998,96 @@ async function baixar(nome,abas){
   const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
   try{await S.downloads.save({filename:nome,data:new Uint8Array(buf)});}catch(e){if(e&&e.code==="declined")return;if(e&&e.code==="rate_limited"){toast("Já existe um download aguardando confirmação.");return}toast("Não foi possível gerar o arquivo agora.")}
 }
-function relatorio(){
-  const rs=filtrados(),P=periodo(),at=ativos(rs);
-  const admP=rs.filter(r=>r.situacao==="Admitido"&&noPer(r.dataAdmissao,P)),desP=rs.filter(r=>r.situacao==="Desistiu"&&noPer(r.dataDesistencia,P));
-  const resumo=[{"Indicador":"Período","Valor":({mes:"Mês atual",90:"Últimos 90 dias",obra:"Obra toda"})[S.per]},{"Indicador":"Gerado em","Valor":br(hoje())},
-    {"Indicador":"Filtro de líder","Valor":S.f.lider||"Todos"},{"Indicador":"Filtro de função","Valor":S.f.funcao||"Todas"},{"Indicador":"Em processo","Valor":at.length},
-    ...ETAPAS.slice(0,5).map(e=>({"Indicador":"  "+e.k,"Valor":at.filter(r=>r._etapa===e.k).length})),
-    {"Indicador":"Atrasados ou com problema","Valor":at.filter(r=>r._alerta||r._parado).length},{"Indicador":"Admitidos no período","Valor":admP.length},
-    {"Indicador":"Desistências no período","Valor":desP.length},{"Indicador":"Pós-admissão pendente","Valor":posPend(rs).length}];
-  const vg=(S.cfg.vagas||[]).map(v=>{const adm=S.rows.filter(r=>r.situacao==="Admitido"&&r.funcao===v.funcao&&(!v.desde||(r.dataAdmissao||"")>=v.desde)).length,ep=S.rows.filter(r=>r.situacao==="Em processo"&&r.funcao===v.funcao).length;
-    return{"Função":v.funcao,"Vagas":+v.vagas,"Contando desde":br(v.desde),"Admitidos":adm,"Faltam":Math.max(0,v.vagas-adm),"Em processo":ep}});
-  baixar(`Admissoes_Auguri_${hoje()}.xlsx`,[["Resumo",resumo],["Em processo",at.map(linhaExp)],["Admitidos no período",admP.map(linhaExp)],["Desistências no período",desP.map(linhaExp)],["Pós-admissão pendente",posPend(rs).map(linhaExp)],...(vg.length?[["Vagas",vg]]:[])]);
+/* ---------- relatório (PDF e Excel) ---------- */
+const REL={fmt:"pdf",conteudo:"processo",grupo:"etapa"};
+const REL_CONT={processo:"Em processo",pos:"Pós-admissão pendente",adm:"Admitidos no período",des:"Desistências no período",todos:"Todos (em processo, pós-admissão e período)"};
+function andamentoTxt(r){
+  if(r.situacao==="Desistiu")return`Desistiu em ${br(r.dataDesistencia)||"—"}${r.motivo?" | "+r.motivo:""}`;
+  if(r.situacao==="Admitido"){const p=posResumo(r);return`Admitido em ${br(r.dataAdmissao)||"—"}${posAplica(r)?` | Pós-admissão ${p.completo?"concluído":p.ok+"/"+p.tot}`:""}`}
+  const d=r._docs,h=hoje(),partes=[];
+  partes.push(`Docs ${d.completo?"OK":d.ok+"/"+d.tot}`);
+  if(r.fezExame==="Sim")partes.push("Exame feito");else if(r.fezExame==="Não")partes.push("Faltou ao exame");
+  else if(r.dataExame)partes.push(`Exame ${brc(r.dataExame)}${r.horaExame?" "+r.horaExame:""}${r.dataExame<h?" (confirmar)":""}`);else partes.push("Exame a agendar");
+  partes.push(r.aso==="Apto"?"ASO apto":r.aso==="Inapto"?"ASO inapto":"ASO pendente");
+  if(r.previsao)partes.push(`Admissão ${brc(r.previsao)}`);
+  return partes.join(" | ");
 }
+function dadosRelatorio(){
+  const rs=filtrados(),P=periodo();
+  const sel={processo:r=>r.situacao==="Em processo",pos:r=>r._etapa==="Pós-admissão",adm:r=>r.situacao==="Admitido"&&noPer(r.dataAdmissao,P),des:r=>r.situacao==="Desistiu"&&noPer(r.dataDesistencia,P)};
+  const f=REL.conteudo==="todos"?(r=>sel.processo(r)||sel.pos(r)||sel.adm(r)||sel.des(r)):sel[REL.conteudo];
+  const ordemEt=[...ORD,"Admitido","Desistiu"];
+  const lista=rs.filter(f).sort((a,b)=>a.nome.localeCompare(b.nome,"pt"));
+  const chave=r=>REL.grupo==="lider"?(r.lider||"Sem líder"):r._etapa;
+  const nomes=[...new Set(lista.map(chave))].sort((a,b)=>REL.grupo==="lider"?(a==="Sem líder")-(b==="Sem líder")||a.localeCompare(b,"pt"):ordemEt.indexOf(a)-ordemEt.indexOf(b));
+  const grupos=nomes.map(n=>({nome:n,rs:lista.filter(r=>chave(r)===n)}));
+  const linha=r=>[r.nome,r._etapa,andamentoTxt(r),r.lider||"—",r.alojado||"—"];
+  const filtros=[`Conteúdo: ${REL_CONT[REL.conteudo]}`,["adm","des","todos"].includes(REL.conteudo)?`Período: ${({mes:"mês atual",90:"últimos 90 dias",obra:"obra toda"})[S.per]}`:"",
+    S.f.lider?`Líder: ${S.f.lider}`:"",S.f.funcao?`Função: ${S.f.funcao}`:""].filter(Boolean).join("   ·   ");
+  const resumo=nomes.map(n=>[n,grupos.find(g=>g.nome===n).rs.length]);
+  return{lista,grupos,linha,filtros,resumo};
+}
+function abrirRelatorio(){
+  const m=$("#mini");m.onchange=null;m.onclick=null;
+  const op=(nome,val,txt)=>`<label class="ropt"><input type="radio" name="${nome}" value="${val}" ${REL[nome]===val?"checked":""}> ${txt}</label>`;
+  m.innerHTML=`<form id="relF" method="dialog"><div class="dh"><h2>Gerar relatório</h2></div><div class="db">
+   <fieldset class="rfs"><legend>Formato</legend>${op("fmt","pdf","PDF")}${op("fmt","xlsx","Excel")}</fieldset>
+   <fieldset class="rfs"><legend>Conteúdo</legend>${Object.entries(REL_CONT).map(([k,t])=>op("conteudo",k,t)).join("")}</fieldset>
+   <fieldset class="rfs"><legend>Agrupar por</legend>${op("grupo","etapa","Etapa")}${op("grupo","lider","Líder")}</fieldset>
+   <p class="small muted" style="margin:6px 0 0">Colunas: Candidato, Etapa, Andamento, Líder e Alojado. Os filtros de líder, função e período do Painel também são aplicados.</p>
+   <p class="err" id="relErr"></p></div>
+   <div class="df"><span class="sp"></span><button type="button" class="btn ghost" id="relC">Cancelar</button><button type="submit" class="btn pri">Gerar</button></div></form>`;
+  m.showModal();$("#relC").onclick=()=>m.close();
+  $("#relF").onsubmit=async e=>{e.preventDefault();const fd=new FormData(e.target);["fmt","conteudo","grupo"].forEach(k=>REL[k]=fd.get(k));
+    const d=dadosRelatorio();if(!d.lista.length){$("#relErr").textContent="Nenhum candidato para esse conteúdo e filtros.";return}
+    const btn=e.target.querySelector("button[type=submit]");btn.disabled=true;btn.textContent="Gerando…";
+    try{REL.fmt==="pdf"?await relatorioPDF(d):await relatorioExcel(d);m.close()}
+    catch(err){$("#relErr").textContent="Não foi possível gerar o arquivo. Verifique a conexão com a internet e tente de novo.";btn.disabled=false;btn.textContent="Gerar"}};
+}
+const nomeArq=ext=>`Relatorio_Admissoes_${({processo:"Em_processo",pos:"Pos_admissao",adm:"Admitidos",des:"Desistencias",todos:"Geral"})[REL.conteudo]}_${hoje()}.${ext}`;
+async function relatorioPDF(d){
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  const W=doc.internal.pageSize.getWidth(),Hh=doc.internal.pageSize.getHeight(),M=12;
+  const logo=document.querySelector(".sbrand .logoimg").getAttribute("src");
+  const agora=new Date(),quando=`${br(hoje())} às ${pad(agora.getHours())}:${pad(agora.getMinutes())}`;
+  const cab=()=>{doc.setFillColor(17,17,18);doc.rect(0,0,W,24,"F");
+    try{doc.addImage(logo,"PNG",M,5,28,14)}catch(e){}
+    doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text("Relatório de Admissões",W-M,11,{align:"right"});
+    doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor(190,190,195);doc.text(`Obra Auguri  ·  Gerado em ${quando}`,W-M,17,{align:"right"})};
+  cab();
+  let y=31;doc.setTextColor(60,60,65);doc.setFontSize(8.5);doc.text(doc.splitTextToSize(d.filtros,W-2*M),M,y);y+=6;
+  // resumo em caixas
+  const caixas=[["Total",d.lista.length],...d.resumo],porLinha=Math.min(5,caixas.length),bw=(W-2*M-(porLinha-1)*3)/porLinha,bh=15;
+  caixas.forEach(([t,n],i)=>{const col=i%porLinha;if(i&&!col)y+=bh+3;const x=M+col*(bw+3),esc0=i===0;
+    doc.setDrawColor(215,215,220);doc.setFillColor(esc0?17:247,esc0?17:247,esc0?18:248);doc.roundedRect(x,y,bw,bh,1.5,1.5,"FD");
+    doc.setFont("helvetica","bold");doc.setFontSize(15);doc.setTextColor(esc0?255:17,esc0?255:17,esc0?255:18);doc.text(String(n),x+4,y+9.8);
+    doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(esc0?205:85,esc0?205:85,esc0?210:90);
+    doc.text(doc.splitTextToSize(t,bw-16).slice(0,2),x+14,y+6.3)});
+  y+=bh+8;
+  const corpo=[];d.grupos.forEach(g=>{corpo.push([{content:`${g.nome}  (${g.rs.length})`,colSpan:5,styles:{fillColor:[232,232,235],textColor:[17,17,18],fontStyle:"bold",fontSize:9}}]);g.rs.forEach(r=>corpo.push(d.linha(r)))});
+  const at=window.autoTable||((doc2,o)=>doc2.autoTable(o));
+  at(doc,{startY:y,margin:{left:M,right:M,top:30,bottom:16},head:[["Candidato","Etapa","Andamento","Líder","Alojado"]],body:corpo,theme:"grid",
+    styles:{font:"helvetica",fontSize:8.3,cellPadding:{top:2,bottom:2,left:2.2,right:2.2},lineColor:[222,222,226],lineWidth:.2,textColor:[30,30,34],valign:"middle"},
+    headStyles:{fillColor:[17,17,18],textColor:255,fontStyle:"bold",fontSize:8.5},
+    columnStyles:{0:{cellWidth:48,fontStyle:"bold"},1:{cellWidth:30},2:{cellWidth:"auto"},3:{cellWidth:22},4:{cellWidth:16,halign:"center"}},
+    didParseCell:c=>{if(c.section==="body"&&c.column.index===2&&/confirmar|Faltou|inapto/.test(String(c.cell.raw)))c.cell.styles.textColor=[176,58,46]},
+    didDrawPage:()=>{if(doc.internal.getCurrentPageInfo().pageNumber>1)cab()}});
+  const tot=doc.internal.getNumberOfPages();
+  for(let i=1;i<=tot;i++){doc.setPage(i);doc.setFontSize(7.5);doc.setTextColor(130,130,135);doc.setFont("helvetica","normal");
+    doc.text("Rio Ave · Sistema de Admissões",M,Hh-7);doc.text(`Página ${i} de ${tot}`,W-M,Hh-7,{align:"right"})}
+  const buf=doc.output("arraybuffer");await S.downloads.save({filename:nomeArq("pdf"),data:new Uint8Array(buf)});toast("Relatório em PDF gerado");
+}
+async function relatorioExcel(d){
+  if(!window.XLSX)throw new Error("xlsx");
+  const agora=new Date(),aoa=[["Relatório de Admissões · Obra Auguri"],[`Gerado em ${br(hoje())} às ${pad(agora.getHours())}:${pad(agora.getMinutes())}`],[d.filtros],[],
+    ["Resumo"],["Total",d.lista.length],...d.resumo,[],["Candidato","Etapa","Andamento","Líder","Alojado"]];
+  const merges=[];d.grupos.forEach(g=>{aoa.push([`${g.nome} (${g.rs.length})`]);merges.push({s:{r:aoa.length-1,c:0},e:{r:aoa.length-1,c:4}});g.rs.forEach(r=>aoa.push(d.linha(r)))});
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws["!merges"]=[{s:{r:0,c:0},e:{r:0,c:4}},{s:{r:2,c:0},e:{r:2,c:4}},...merges];
+  ws["!cols"]=[{wch:36},{wch:20},{wch:62},{wch:14},{wch:9}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Relatório");
+  const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});await S.downloads.save({filename:nomeArq("xlsx"),data:new Uint8Array(buf)});toast("Relatório em Excel gerado");
+}
+function relatorio(){abrirRelatorio()}
 
 /* ---------- eventos ---------- */
 document.addEventListener("click",async ev=>{
