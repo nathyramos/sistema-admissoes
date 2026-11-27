@@ -1024,7 +1024,7 @@ function dadosRelatorio(){
   const chave=r=>REL.grupo==="lider"?(r.lider||"Sem líder"):r._etapa;
   const nomes=[...new Set(lista.map(chave))].sort((a,b)=>REL.grupo==="lider"?(a==="Sem líder")-(b==="Sem líder")||a.localeCompare(b,"pt"):ordemEt.indexOf(a)-ordemEt.indexOf(b));
   const grupos=nomes.map(n=>({nome:n,rs:lista.filter(r=>chave(r)===n)}));
-  const linha=r=>[r.nome,r._etapa,andamentoTxt(r),r.cidade||"—",r.rota||"—",r.lider||"—",r.alojado||"—"];
+  const linha=r=>[r.nome,r.funcao||"—",r._etapa,andamentoTxt(r),r.cidade||"—",r.rota||"—",r.lider||"—",r.alojado||"—"];
   const filtros=[`Conteúdo: ${REL_CONT[REL.conteudo]}`,["adm","des","todos"].includes(REL.conteudo)?`Período: ${({mes:"mês atual",90:"últimos 90 dias",obra:"obra toda"})[S.per]}`:"",
     S.f.lider?`Líder: ${S.f.lider}`:"",S.f.funcao?`Função: ${S.f.funcao}`:""].filter(Boolean).join("   ·   ");
   const resumo=nomes.map(n=>[n,grupos.find(g=>g.nome===n).rs.length]);
@@ -1037,7 +1037,7 @@ function abrirRelatorio(){
    <fieldset class="rfs"><legend>Formato</legend>${op("fmt","pdf","PDF")}${op("fmt","xlsx","Excel")}</fieldset>
    <fieldset class="rfs"><legend>Conteúdo</legend>${Object.entries(REL_CONT).map(([k,t])=>op("conteudo",k,t)).join("")}</fieldset>
    <fieldset class="rfs"><legend>Agrupar por</legend>${op("grupo","etapa","Etapa")}${op("grupo","lider","Líder")}</fieldset>
-   <p class="small muted" style="margin:6px 0 0">Colunas: Candidato, Etapa, Andamento, Cidade, Rota, Líder e Alojado. Os filtros de líder, função e período do Painel também são aplicados.</p>
+   <p class="small muted" style="margin:6px 0 0">Colunas: Candidato, Função, Etapa, Andamento, Cidade, Rota, Líder e Alojado. Os filtros de líder, função e período do Painel também são aplicados.</p>
    <p class="err" id="relErr"></p></div>
    <div class="df"><span class="sp"></span><button type="button" class="btn ghost" id="relC">Cancelar</button><button type="submit" class="btn pri">Gerar</button></div></form>`;
   m.showModal();$("#relC").onclick=()=>m.close();
@@ -1067,13 +1067,13 @@ async function relatorioPDF(d){
     doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(esc0?205:85,esc0?205:85,esc0?210:90);
     doc.text(doc.splitTextToSize(t,bw-16).slice(0,2),x+14,y+6.3)});
   y+=bh+8;
-  const corpo=[];d.grupos.forEach(g=>{corpo.push([{content:`${g.nome}  (${g.rs.length})`,colSpan:7,styles:{fillColor:[232,232,235],textColor:[17,17,18],fontStyle:"bold",fontSize:9}}]);g.rs.forEach(r=>corpo.push(d.linha(r)))});
+  const corpo=[];d.grupos.forEach(g=>{corpo.push([{content:`${g.nome}  (${g.rs.length})`,colSpan:8,styles:{fillColor:[232,232,235],textColor:[17,17,18],fontStyle:"bold",fontSize:9}}]);g.rs.forEach(r=>corpo.push(d.linha(r)))});
   const at=window.autoTable||((doc2,o)=>doc2.autoTable(o));
-  at(doc,{startY:y,margin:{left:M,right:M,top:30,bottom:16},head:[["Candidato","Etapa","Andamento","Cidade","Rota","Líder","Alojado"]],body:corpo,theme:"grid",
+  at(doc,{startY:y,margin:{left:M,right:M,top:30,bottom:16},head:[["Candidato","Função","Etapa","Andamento","Cidade","Rota","Líder","Alojado"]],body:corpo,theme:"grid",
     styles:{font:"helvetica",fontSize:8.3,cellPadding:{top:2,bottom:2,left:2.2,right:2.2},lineColor:[222,222,226],lineWidth:.2,textColor:[30,30,34],valign:"middle"},
     headStyles:{fillColor:[17,17,18],textColor:255,fontStyle:"bold",fontSize:8.5},
-    columnStyles:{0:{cellWidth:52,fontStyle:"bold"},1:{cellWidth:31},2:{cellWidth:"auto"},3:{cellWidth:28},4:{cellWidth:44},5:{cellWidth:22},6:{cellWidth:16,halign:"center"}},
-    didParseCell:c=>{if(c.section==="body"&&c.column.index===2&&/confirmar|Faltou|inapto/.test(String(c.cell.raw)))c.cell.styles.textColor=[176,58,46]},
+    columnStyles:{0:{cellWidth:45,fontStyle:"bold"},1:{cellWidth:28},2:{cellWidth:28},3:{cellWidth:"auto"},4:{cellWidth:26},5:{cellWidth:40},6:{cellWidth:20},7:{cellWidth:18,halign:"center"}},
+    didParseCell:c=>{if(c.section==="body"&&c.column.index===3&&/confirmar|Faltou|inapto/.test(String(c.cell.raw)))c.cell.styles.textColor=[176,58,46]},
     didDrawPage:()=>{if(doc.internal.getCurrentPageInfo().pageNumber>1)cab()}});
   const tot=doc.internal.getNumberOfPages();
   for(let i=1;i<=tot;i++){doc.setPage(i);doc.setFontSize(7.5);doc.setTextColor(130,130,135);doc.setFont("helvetica","normal");
@@ -1083,10 +1083,10 @@ async function relatorioPDF(d){
 async function relatorioExcel(d){
   if(!window.XLSX)throw new Error("xlsx");
   const agora=new Date(),aoa=[["Relatório de Admissões · Obra Auguri"],[`Gerado em ${br(hoje())} às ${pad(agora.getHours())}:${pad(agora.getMinutes())}`],[d.filtros],[],
-    ["Resumo"],["Total",d.lista.length],...d.resumo,[],["Candidato","Etapa","Andamento","Cidade","Rota","Líder","Alojado"]];
-  const merges=[];d.grupos.forEach(g=>{aoa.push([`${g.nome} (${g.rs.length})`]);merges.push({s:{r:aoa.length-1,c:0},e:{r:aoa.length-1,c:6}});g.rs.forEach(r=>aoa.push(d.linha(r)))});
-  const ws=XLSX.utils.aoa_to_sheet(aoa);ws["!merges"]=[{s:{r:0,c:0},e:{r:0,c:6}},{s:{r:2,c:0},e:{r:2,c:6}},...merges];
-  ws["!cols"]=[{wch:36},{wch:20},{wch:58},{wch:18},{wch:30},{wch:14},{wch:9}];
+    ["Resumo"],["Total",d.lista.length],...d.resumo,[],["Candidato","Função","Etapa","Andamento","Cidade","Rota","Líder","Alojado"]];
+  const merges=[];d.grupos.forEach(g=>{aoa.push([`${g.nome} (${g.rs.length})`]);merges.push({s:{r:aoa.length-1,c:0},e:{r:aoa.length-1,c:7}});g.rs.forEach(r=>aoa.push(d.linha(r)))});
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws["!merges"]=[{s:{r:0,c:0},e:{r:0,c:7}},{s:{r:2,c:0},e:{r:2,c:7}},...merges];
+  ws["!cols"]=[{wch:36},{wch:20},{wch:20},{wch:58},{wch:18},{wch:30},{wch:14},{wch:9}];
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Relatório");
   const buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});await S.downloads.save({filename:nomeArq("xlsx"),data:new Uint8Array(buf)});toast("Relatório em Excel gerado");
 }
